@@ -1,0 +1,10 @@
+## IDF Component Manager Manifest File
+dependencies:
+  espressif/bh1750: "^1.0.3"
+  espressif/aht20: "^0.1.0~1"
+  espressif/esp-zboss-lib: "~1.4.1"
+  espressif/esp-zigbee-lib: "~1.4.1"
+  espressif/led_strip: "~2.5.4"
+  ## Required IDF version
+  idf:
+    version: ">=5.2.0"
