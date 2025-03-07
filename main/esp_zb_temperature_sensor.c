@@ -21,10 +21,6 @@
 #include "freertos/task.h"
 #include "ha/esp_zigbee_ha_standard.h"
 
-#if !defined ZB_ED_ROLE
-#error Define ZB_ED_ROLE in idf.py menuconfig to compile sensor (End Device) source code.
-#endif
-
 static const char *TAG = "ESP_ZB_TEMP_SENSOR";
 
 static int16_t zb_temperature_to_s16(float temp)

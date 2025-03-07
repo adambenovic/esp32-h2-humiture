@@ -21,11 +21,17 @@
 #define HA_ESP_SENSOR_ENDPOINT          10      /* esp temperature sensor device endpoint, used for temperature measurement */
 #define ESP_ZB_PRIMARY_CHANNEL_MASK     ESP_ZB_TRANSCEIVER_ALL_CHANNELS_MASK    /* Zigbee primary channel mask use in the example */
 
-#define ESP_TEMP_SENSOR_UPDATE_INTERVAL 30      /* Local sensor update interval (second) */
+#define ESP_TEMP_SENSOR_UPDATE_INTERVAL 10      /* Local sensor update interval (second) */
 
-#define ESP_ZB_ZED_CONFIG()                                         \
+/* Attribute values in ZCL string format
+ * The string should be started with the length of its own.
+ */
+#define MANUFACTURER_NAME               "\x0A""BenoCode"
+#define MODEL_IDENTIFIER                "\x0B""ESP32H2"
+
+#define ESP_ZB_ZR_CONFIG()                                         \
     {                                                               \
-        .esp_zb_role = ESP_ZB_DEVICE_TYPE_ED,                       \
+        .esp_zb_role = ESP_ZB_DEVICE_TYPE_ROUTER,                   \
         .install_code_policy = INSTALLCODE_POLICY_ENABLE,           \
         .nwk_cfg.zed_cfg = {                                        \
             .ed_timeout = ED_AGING_TIMEOUT,                         \

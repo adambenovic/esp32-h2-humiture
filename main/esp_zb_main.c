@@ -7,13 +7,7 @@
 #include "freertos/task.h"
 #include "ha/esp_zigbee_ha_standard.h"
 
-#if !defined ZB_ED_ROLE
-#error Define ZB_ED_ROLE in idf.py menuconfig to compile zigbee device (End Device) source code.
-#endif
-
 static const char *TAG = "ESP_ZB_HUMITURE";
-static const char *MANUFACTURER_NAME = "BenoCode";
-static const char *MODEL_IDENTIFIER = "ESP32H2";
 
 static void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
 {
@@ -22,7 +16,11 @@ static void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
 
 static esp_err_t deferred_driver_init(void)
 {
-    temp_deferred_driver_init();
+    esp_err_t err = temp_deferred_driver_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Temperature sensor driver initialization failed: %s", esp_err_to_name(err));
+        return err;
+    }
     return ESP_OK;
 }
 
@@ -41,6 +39,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
         if (err_status == ESP_OK) {
             ESP_LOGI(TAG, "Deferred driver initialization %s", deferred_driver_init() ? "failed" : "successful");
             ESP_LOGI(TAG, "Device started up in %s factory-reset mode", esp_zb_bdb_is_factory_new() ? "" : "non");
+
             if (esp_zb_bdb_is_factory_new()) {
                 ESP_LOGI(TAG, "Start network steering");
                 esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING);
@@ -82,7 +81,7 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
 static void esp_zb_task(void *pvParameters)
 {
      /* Initialize Zigbee stack */
-    esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZED_CONFIG();
+    esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZR_CONFIG();
     esp_zb_init(&zb_nwk_cfg);
 
     /* basic cluster create with fully customized */
@@ -101,8 +100,6 @@ static void esp_zb_task(void *pvParameters)
     /* create cluster lists for this endpoint */
     esp_zb_cluster_list_t *esp_zb_cluster_list = esp_zb_zcl_cluster_list_create();
     esp_zb_cluster_list_add_basic_cluster(esp_zb_cluster_list, esp_zb_basic_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
-    /* update basic cluster in the existed cluster list */
-    esp_zb_cluster_list_update_basic_cluster(esp_zb_cluster_list, esp_zb_basic_cluster_create(NULL), ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
     esp_zb_cluster_list_add_temperature_meas_cluster(esp_zb_cluster_list, esp_zb_temp_meas_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
     esp_zb_cluster_list_add_humidity_meas_cluster(esp_zb_cluster_list, esp_zb_humidity_meas_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
@@ -120,7 +117,7 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_core_action_handler_register(zb_action_handler);
 
     esp_zb_zcl_reporting_info_t reporting_info = get_reporting_info();
-    esp_zb_zcl_update_reporting_info(&reporting_info);
+    ESP_ERROR_CHECK(esp_zb_zcl_update_reporting_info(&reporting_info));
 
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
     ESP_ERROR_CHECK(esp_zb_start(false));
@@ -136,5 +133,5 @@ void app_main(void)
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
 
-    xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
+    xTaskCreate(esp_zb_task, "Zigbee_main", 8192, NULL, 5, NULL);
 }
