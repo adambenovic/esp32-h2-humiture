@@ -21,7 +21,7 @@
 #define HA_ESP_SENSOR_ENDPOINT          10      /* esp temperature sensor device endpoint, used for temperature measurement */
 #define ESP_ZB_PRIMARY_CHANNEL_MASK     ESP_ZB_TRANSCEIVER_ALL_CHANNELS_MASK    /* Zigbee primary channel mask use in the example */
 
-#define ESP_TEMP_SENSOR_UPDATE_INTERVAL 10      /* Local sensor update interval (second) */
+#define ESP_TEMP_SENSOR_UPDATE_INTERVAL 60      /* Local sensor update interval (second) */
 
 /* Attribute values in ZCL string format
  * The string should be started with the length of its own.

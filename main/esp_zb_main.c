@@ -123,7 +123,7 @@ static void esp_zb_task(void *pvParameters)
     ESP_ERROR_CHECK(esp_zb_start(false));
     esp_zb_main_loop_iteration();
 }
- 
+
 void app_main(void)
 {
     esp_zb_platform_config_t config = {

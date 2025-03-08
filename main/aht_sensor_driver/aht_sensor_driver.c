@@ -69,8 +69,8 @@ static void aht_sensor_driver_value_update(void *arg) {
         // ESP_LOGI(TAG, "%-20s", "getting data for aht20!");
 
         ESP_ERROR_CHECK(aht20_read_temperature_humidity(aht20, &temperature_raw, &temperature, &humidity_raw, &humidity));
-        // ESP_LOGI(TAG, "%-20s: %2.2f", "humidity is", humidity);
-        // ESP_LOGI(TAG, "%-20s: %2.2f degC", "temperature is", temperature);
+        ESP_LOGI(TAG, "%-20s: %2.2f", "humidity is", humidity);
+        ESP_LOGI(TAG, "%-20s: %2.2f degC", "temperature is", temperature);
 
         if (func_ptr) {
             func_ptr(temperature, humidity);
